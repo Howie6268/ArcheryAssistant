@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "purpose": "Documentation of the bundled model contract; Java enforces this contract in YoloOnnxDetector, not by loading this JSON.",
+  "model": "archery-arrow-in-target.onnx",
+  "accepted_filename_aliases": ["archery-yolox.onnx", "archery.onnx"],
+  "sha256": "950cde7362cc5ad2d0503af3b7313780b93810be1b72c9eb5535b22ee8c03fe2",
+  "evidence": [
+    "training/YOLOX/yolox/data/data_augment.py:preproc",
+    "training/scripts/yolox_exp/yolox_nano_arrow_in_target.py",
+    "Measured bundled ONNX graph input/output and decoded grid operations"
+  ],
+  "input": {
+    "dtype": "float32",
+    "shape": [1, 3, 640, 640],
+    "layout": "NCHW",
+    "channel_order": "BGR",
+    "value_range": [0, 255],
+    "normalization": "none",
+    "resize": "aspect-preserving bilinear, dimensions truncated toward zero, minimum 1 pixel",
+    "padding": "top-left aligned content; bottom/right fill 114",
+    "resize_parity_note": "Java uses Graphics2D bilinear/ImageIO, not pixel-identical OpenCV resize/JPEG decoding"
+  },
+  "output": {
+    "dtype": "float32",
+    "shape": [1, 8400, 6],
+    "layout": "batch, candidates, attributes",
+    "attributes": ["center_x", "center_y", "width", "height", "objectness", "arrow_probability"],
+    "coordinate_space": "640x640 letterbox pixels",
+    "grid_decoded": true,
+    "score": "objectness * arrow_probability",
+    "classes": [{"index": 0, "name": "arrow"}],
+    "entry_point_keypoints": false
+  },
+  "postprocess": {
+    "candidate_confidence_min": 0.30,
+    "service_confidence_min": 0.35,
+    "nms_iou": 0.45,
+    "nms": "class-aware",
+    "reject": "non-finite values, invalid probabilities, non-positive dimensions, boxes wholly outside resized image content",
+    "box_clipping": "none; preserve center and extent for intersecting edge boxes",
+    "size_limit": null,
+    "expected_count_truncation": false
+  },
+  "limitations": [
+    "Only this single-class decoded YOLOX layout is supported; filename aliases must share this contract and other models need an explicit adapter.",
+    "The existing service still estimates entry points and target circle heuristically; results require manual review.",
+    "No detection is not a miss/zero score. A failed dedicated model does not silently fall back to dark spots.",
+    "The SHA256 records the evaluated artifact; runtime shape validation does not verify this hash or prove identical model semantics."
+  ]
+}

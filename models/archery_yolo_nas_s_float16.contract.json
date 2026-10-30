@@ -1,0 +1,136 @@
+{
+  "contract_version": "nas-entry-v1",
+  "date": "2026-10-24",
+  "purpose": "Image-local arrow-entry candidates requiring user review",
+  "model": {
+    "file": "models/archery_yolo_nas_s_float16.tflite",
+    "sha256": "8a24d69fa5a0d6c2cadceafdcfac074cb739811c9cff3f54007754d9c5ff31f5",
+    "size_bytes": 24407956,
+    "format": "TFLite",
+    "signature": "serving_default",
+    "train_signature": false,
+    "source": "Extracted from provided 识箭.apk; duplicate NAS entries are byte-identical",
+    "signature_io_aliases": {
+      "inputs": [
+        "input"
+      ],
+      "outputs": [
+        "boxes",
+        "scores"
+      ]
+    }
+  },
+  "input": {
+    "name": "serving_default_input:0",
+    "dtype": "float32",
+    "shape": [
+      1,
+      640,
+      640,
+      3
+    ],
+    "layout": "NHWC",
+    "channel_order": "BGR",
+    "value_range": [
+      0,
+      1
+    ],
+    "normalization": "divide byte values by 255.0",
+    "resize": "aspect preserving PIL 12.1.1 BILINEAR",
+    "dimension_rounding": "Python round ties to even; max(1,round(original_dimension*min(640/W,640/H)))",
+    "padding": "centered; left=(640-rw)//2 top=(640-rh)//2; extra pixel right/bottom",
+    "padding_before_normalization": [
+      114,
+      114,
+      114
+    ],
+    "exif_orientation": "Reference does not auto-apply EXIF; caller must align decoded raster and display",
+    "tensor_binary_format": "little-endian float32 row-major NHWC; 4915200 bytes"
+  },
+  "outputs": [
+    {
+      "name": "PartitionedCall:0",
+      "dtype": "float32",
+      "shape": [
+        1,
+        8400,
+        4
+      ],
+      "meaning": "already-decoded xyxy box edges in 640x640 input coordinates"
+    },
+    {
+      "name": "PartitionedCall:1",
+      "dtype": "float32",
+      "shape": [
+        1,
+        8400,
+        3
+      ],
+      "meaning": "per-class probabilities already passed through sigmoid; no separate objectness"
+    }
+  ],
+  "classes": {
+    "integration_class_id": 0,
+    "integration_semantic": "arrow_entry_candidate inferred by visual tests, not an official label",
+    "class_1_2": "reserved debug only; official names unverified"
+  },
+  "postprocess": {
+    "class_selection": "class0 probability directly, not argmax across classes",
+    "confidence_min_inclusive": 0.25,
+    "nms_iou_suppress_strictly_greater_than": 0.5,
+    "nms_space": "input xyxy; continuous area, no +1",
+    "nms_tie_break": "confidence descending then anchor index ascending",
+    "nms_before_center_filter": true,
+    "extra_sigmoid": false,
+    "multiply_objectness": false,
+    "grid_decode": false,
+    "expected_count_truncation": false,
+    "target_annotation_roi_filter": false,
+    "max_predictions_cap": null,
+    "return_only_class0": true,
+    "point": "box center proxy, not a direct keypoint"
+  },
+  "coordinate_mapping": {
+    "space": "original_pixel_centers",
+    "scale_x": "resized_width/original_width",
+    "scale_y": "resized_height/original_height",
+    "box_x1": "(input_x1-pad_left)/scale_x",
+    "box_y1": "(input_y1-pad_top)/scale_y",
+    "point_x": "(((input_x1+input_x2)/2-pad_left)/scale_x)-0.5",
+    "point_y": "(((input_y1+input_y2)/2-pad_top)/scale_y)-0.5",
+    "precision": "float64/double intermediate",
+    "keep_point": "0<=x<W and 0<=y<H",
+    "box_clipping": "none in result; drawing may clip without moving the center"
+  },
+  "runtime": {
+    "verified_python": "3.12.11",
+    "verified_ai_edge_litert": "2.3.0",
+    "verified_numpy": "2.4.3",
+    "verified_pillow": "12.1.1",
+    "verified_backend": "macOS arm64 CPU XNNPACK 4 threads",
+    "mobile_gpu_npu_verified": false,
+    "desktop_onnxruntime_direct_load": false
+  },
+  "acceptance": {
+    "fixture_ids": [
+      "S008",
+      "S016",
+      "S078",
+      "S143"
+    ],
+    "cpu_reference_replay_max_box_abs": 0.001,
+    "cpu_reference_replay_max_score_abs": 1e-06,
+    "cross_backend_initial_suggested_box_abs": 0.01,
+    "cross_backend_initial_suggested_score_abs": 0.0001,
+    "cross_backend_tolerances_are_verified": false,
+    "near_threshold_results_require_review": true
+  },
+  "limits": {
+    "original_app_nas_preprocessing_known": false,
+    "current_setting": "center-bgr-unit is this experiment integration baseline",
+    "score_is_calibrated_accuracy": false,
+    "automatic_ring_scoring_validated": false,
+    "model_original_training_set_known": false,
+    "all144_independent_test": false
+  }
+}

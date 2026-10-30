@@ -1,0 +1,6 @@
+# Local account and training history. These files contain a plaintext password
+# and personal session photos. The app creates a blank data folder on first launch.
+data/archery-data.json
+data/archery-data.json.bak
+data/photos/
+logs/

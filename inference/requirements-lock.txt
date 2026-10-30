@@ -1,0 +1,11 @@
+# Complete dependency set used by the private worker and Windows bundle builder.
+ai-edge-litert==2.3.0
+numpy==2.4.3
+Pillow==12.1.1
+backports.strenum==1.2.8
+flatbuffers==25.12.19
+ml_dtypes==0.6.0
+protobuf==7.36.2
+tqdm==4.70.1
+typing-extensions==4.16.0
+colorama==0.4.6; sys_platform == "win32"
